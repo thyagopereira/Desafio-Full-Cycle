@@ -7,7 +7,7 @@ services:
     command: --innodb-use-native-aio=0
     tty: true
     volumes:
-      - ./mysql:/var/lib/mysql
+      - mysql:/var/lib/mysql
     environment:
       - MYSQL_DATABASE=nodedb
       - MYSQL_ROOT_PASSWORD=fullcycleDB
@@ -29,3 +29,6 @@ services:
 networks:
   nodenet:
     driver: bridge
+
+volumes:
+  mysql:
