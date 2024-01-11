@@ -25,6 +25,8 @@ services:
     tty: true
     ports:
       - "3000:3000"
+    depends_on:
+      - db
 
 networks:
   nodenet:
