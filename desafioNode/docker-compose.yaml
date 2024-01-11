@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:5.7
+    restart : always
+    command: --innodb-use-native-aio=0
+    tty: true
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=nodedb
+      - MYSQL_ROOT_PASSWORD=fullcycleDB
+    networks:
+      - nodenet
+
+  app:
+    build:
+      context: node
+    container_name: app
+    networks:
+      - nodenet
+    volumes: 
+      - ./node:/usr/src/app
+    tty: true
+    ports:
+      - "3000:3000"
+
+networks:
+  nodenet:
+    driver: bridge
