@@ -1,4 +1,6 @@
-const express = require('express')
+const express = require('express');
+const { faker } = require(`@faker-js/faker`);
+
 const app = express()
 const port = 3000
 const config = {
@@ -11,13 +13,17 @@ const config = {
 const mysql = require('mysql')
 const connection = mysql.createConnection(config)
 
-const sql = `INSERT INTO people(nome) values('Wesley');`
-connection.query(sql)
-connection.end()
-
-
 app.get('/', (req,res) => {
-    res.send('<h1>Full Cycle</h1>')
+    const nome = faker.internet.userName();
+    connection.query(`INSERT INTO people(nome) values('${nome}');`)
+    connection.query(`SELECT * FROM people;`, (error, result, fields) => {
+        res.send(`
+        <h1>Full cycle Rocks!</h1>
+        <li>
+            ${!!result.length ? result.map(elem => `<li>${elem.nome}<li>`).join('') : ""}
+        </li>
+        `)
+    })
 })
 
 app.listen(port, ()=> {
