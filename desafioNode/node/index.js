@@ -17,12 +17,18 @@ app.get('/', (req,res) => {
     const nome = faker.internet.userName();
     connection.query(`INSERT INTO people(nome) values('${nome}');`)
     connection.query(`SELECT * FROM people;`, (error, result, fields) => {
-        res.send(`
-        <h1>Full cycle Rocks!</h1>
-        <li>
-            ${!!result.length ? result.map(elem => `<li>${elem.nome}<li>`).join('') : ""}
-        </li>
-        `)
+
+        if (result === undefined) {
+            res.send(`<h1>Full cycle Rocks!</h1>`)
+        }else{
+            res.send(`
+            <h1>Full cycle Rocks!</h1>
+            <li>
+                ${!!result.length ? result.map(elem => `<li>${elem.nome}<li>`).join('') : ""}
+            </li>
+            `)
+        }
+      
     })
 })
 
