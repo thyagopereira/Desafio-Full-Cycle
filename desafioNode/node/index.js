@@ -7,10 +7,11 @@ const config = {
     password: 'fullcycleDB',
     database:'nodedb'
 };
+
 const mysql = require('mysql')
 const connection = mysql.createConnection(config)
 
-const sql = `INSERT INTO people(name) values('Wesley')`
+const sql = `INSERT INTO people(nome) values('Wesley');`
 connection.query(sql)
 connection.end()
 
