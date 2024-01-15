@@ -24,13 +24,12 @@ services:
       - nodenet
     volumes: 
       - ./node:/usr/src/app
-      - ./node/node_modules:/usr/src/app/node_modules
+      - ./node/node_modules:/usr/src/app
     tty: true
     ports:
       - "3000:3000"
     depends_on:
       - db
-
   nginx:
     restart: always
     build:
