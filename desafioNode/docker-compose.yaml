@@ -24,14 +24,12 @@ services:
       - nodenet
     volumes: 
       - ./node:/usr/src/app
-      - ./node/node_modules:/usr/src/app/node_modules
+      - /usr/src/app/node_modules
     tty: true
     ports:
       - "3000:3000"
     depends_on:
       - db
-    command: "npm install"
-    entrypoint: "node index.js"
 
   nginx:
     restart: always
