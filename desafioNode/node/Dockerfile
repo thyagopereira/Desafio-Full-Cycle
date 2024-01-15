@@ -12,8 +12,7 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
 EXPOSE 3000
 
 # Install the application's dependencies into the node_modules's cache directory.
-
-RUN npm update -g && \
-    npm install
+COPY package.json .
+RUN npm install
 
 CMD ["node","index.js"]
