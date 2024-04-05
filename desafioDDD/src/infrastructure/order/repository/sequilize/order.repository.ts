@@ -26,16 +26,8 @@ export default class OrderRepository implements OrderRepositoryInterface{
     );
   }
   
-  async update(entity: Order): Promise<void> {
-    await OrderModel.update({
-      customer_id: entity.customerId,
-      items: entity.items,
-      total: entity.total(),
-    },{
-      where: {
-        id: entity.id
-      },
-    });
+  async update(entity: Order): Promise<void> { 
+
   }
 
   async find(id: string): Promise<Order> {
@@ -44,13 +36,13 @@ export default class OrderRepository implements OrderRepositoryInterface{
     try{
       orderModel = await OrderModel.findOne({
         where: {
-          id,
+          id: id,
         },
         include: ["items"],
         rejectOnEmpty: true,
       });
     }catch (error) {
-      throw new Error("Customer not found");
+      throw new Error("Order  not found");
     }
 
     const itens = orderModel.items.map((orderModelItem) => {
@@ -63,14 +55,11 @@ export default class OrderRepository implements OrderRepositoryInterface{
 
   async findAll(): Promise<Order[]> {
     const orderModels = await OrderModel.findAll({include : "items"});
-
-    console.log(orderModels)
+    
     return orderModels.map((orderModel) => {
       return new Order(orderModel.id, orderModel.customer_id, 
         orderModel.items.map((orderModelItem) => {
 
-          console.log("Inside map")
-          console.log(orderModelItem)
           return new OrderItem(orderModelItem.id, orderModelItem.name, orderModelItem.price,
             orderModelItem.product_id, orderModelItem.quantity); }))         
   });

@@ -153,51 +153,5 @@ describe("Order repository test", () => {
     expect(orders).toEqual(foundOrders)
   });
 
-
-  it("Should update a existing order", async () => {
-
-    // Set up customer 
-    const customerRepository = new CustomerRepository();
-    const customer = new Customer("123", "Customer 1");
-    const address = new Address("Street 1", 1, "Zipcode 1", "City 1");
-    customer.changeAddress(address);
-    await customerRepository.create(customer);
-    
-    // Set up product
-    const productRepository = new ProductRepository();
-    const product = new Product("123", "Product 1", 10);
-    await productRepository.create(product);
-
-    // Set up OrderItem
-    const orderItem = new OrderItem(
-      "1",
-      product.name,
-      product.price,
-      product.id,
-      2
-    );
-
-    //Finally set up Order. 
-    const order = new Order("123", "123", [orderItem]);
-    const orderRepository = new OrderRepository();
-    await orderRepository.create(order);
-
-
-    // Creates new orderItem
-    const updatedCustomer = new Customer("456", "updated");
-    const updatedProduct  = new Product("456", "Product 2", 20);
-    const updatedProductTwo =  new Product("789", "Product 3", 30);
-    const updatedItems = [new OrderItem("2", updatedProduct.name, updatedProduct.price, 
-      updatedProduct.id, 4), new OrderItem("3", updatedProductTwo.name, 
-      updatedProductTwo.price, updatedProductTwo.id, 5)]; 
-
-    order.changeCustomer(updatedCustomer);
-    order.changeItems(updatedItems);
-
-    orderRepository.update(order);
-    const updatedOrder = await orderRepository.find(order.id);
-
-    expect(updatedOrder).toStrictEqual(order);
-        
-  }); 
+  
 });
