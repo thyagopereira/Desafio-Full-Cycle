@@ -1,3 +1,4 @@
+import Customer from "../../customer/entity/customer";
 import OrderItem from "./order_item";
 export default class Order {
   private _id: string;
@@ -23,6 +24,16 @@ export default class Order {
 
   get items(): OrderItem[] {
     return this._items;
+  }
+
+  changeCustomer(entity : Customer): void {
+    this._customerId = entity.id;
+    this.validate();
+  }
+
+  changeItems(items : OrderItem[]): void {
+    this._items = items;
+    this.validate();
   }
 
   validate(): boolean {

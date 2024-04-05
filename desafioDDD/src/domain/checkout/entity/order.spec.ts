@@ -1,3 +1,4 @@
+import Customer from "../../customer/entity/customer";
 import Order from "./order";
 import OrderItem from "./order_item";
 
@@ -40,4 +41,27 @@ describe("Order unit tests", () => {
       const order = new Order("o1", "c1", [item]);
     }).toThrowError("Quantity must be greater than 0");
   });
+
+  it("Should succcesfully change Customer Id", () => {
+    const customer = new Customer("123", "update")
+    const item = new OrderItem("i1", "Item 1", 100, "p1", 2);
+    const order = new Order("O1", "c1", [item])
+
+    order.changeCustomer(customer);
+
+    expect(order.customerId).toBe(customer.id)
+  });
+
+  it("Should change Order Items", () => {
+    const item = new OrderItem("i1", "Item 1", 100, "p1", 2);
+    const order = new Order("O1", "c1", [item]);
+
+    const newItems = [new OrderItem("i2", "item 2", 100, "p2", 2),
+      new OrderItem("i3","Item 3", 200, "p3", 3)];
+
+    order.changeItems(newItems);
+    expect(order.items).toBe(newItems);
+  });
+
+
 });
