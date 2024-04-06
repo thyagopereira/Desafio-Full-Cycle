@@ -153,5 +153,44 @@ describe("Order repository test", () => {
     expect(orders).toEqual(foundOrders)
   });
 
-  
+
+  it("Should change costumer from a existing order", async () => {
+    const customerRepository = new CustomerRepository();
+    const customer = new Customer("123", "Customer 1");
+    const address = new Address("Street 1", 1, "Zipcode 1", "City 1");
+    customer.changeAddress(address);
+    await customerRepository.create(customer);
+
+
+    const productRepository = new ProductRepository();
+    const product = new Product("123", "Product 1", 10);
+    await productRepository.create(product);
+
+    const orderItem = new OrderItem(
+      "1",
+      product.name,
+      product.price,
+      product.id,
+      2
+    );
+
+    const order = new Order("123", "123", [orderItem]);
+    const orderRepository = new OrderRepository()
+    await orderRepository.create(order)
+
+    // Creating customer to change order
+    const newCustomer = new Customer("456", "Customer 2");
+    const newAdress = new Address("Street updated", 123, "Updated Zip", "Updated city")
+    newCustomer.changeAddress(newAdress);
+    await customerRepository.create(newCustomer); 
+
+    // updating order with new customer
+    await order.changeCustomer(newCustomer); 
+    await orderRepository.update(order)
+
+
+    // Recovering order from database
+    const updatedOrder = await orderRepository.find(order.id);
+    expect(updatedOrder.customerId).toBe(newCustomer.id);
+  });
 });
