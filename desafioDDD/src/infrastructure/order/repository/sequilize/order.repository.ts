@@ -26,6 +26,26 @@ export default class OrderRepository implements OrderRepositoryInterface{
   }
   
   async update(entity: Order): Promise<void> { 
+
+    if (entity.items.length !== 0){
+      await OrderItemModel.destroy({
+        where:{
+          order_id: entity.id
+        }
+      });
+      
+      entity.items.forEach( async (item) => {
+        await OrderItemModel.create({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          product_id: item.productId,
+          quantity: item.quantity,
+          order_id: entity.id
+        })
+      });
+    }
+
     await OrderModel.update({
       customer_id: entity.customerId,
       total: entity.total()

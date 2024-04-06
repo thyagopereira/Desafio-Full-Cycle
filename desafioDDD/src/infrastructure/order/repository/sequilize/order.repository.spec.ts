@@ -11,6 +11,7 @@ import ProductRepository from "../../../product/repository/sequelize/product.rep
 import OrderItemModel from "./order-item.model";
 import OrderModel from "./order.model";
 import OrderRepository from "./order.repository";
+import { or } from "sequelize";
 
 describe("Order repository test", () => {
   let sequelize: Sequelize;
@@ -154,7 +155,7 @@ describe("Order repository test", () => {
   });
 
 
-  it("Should change costumer from a existing order", async () => {
+  it("Should update costumer from a existing order", async () => {
     const customerRepository = new CustomerRepository();
     const customer = new Customer("123", "Customer 1");
     const address = new Address("Street 1", 1, "Zipcode 1", "City 1");
@@ -192,5 +193,47 @@ describe("Order repository test", () => {
     // Recovering order from database
     const updatedOrder = await orderRepository.find(order.id);
     expect(updatedOrder.customerId).toBe(newCustomer.id);
+  });
+
+  it("Should update Order Items for existing order", async () => {
+
+    const customerRepository = new CustomerRepository();
+    const customer = new Customer("123", "Customer 1");
+    const address = new Address("Street 1", 1, "Zipcode 1", "City 1");
+    customer.changeAddress(address);
+    await customerRepository.create(customer);
+
+
+    const productRepository = new ProductRepository();
+    const product = new Product("123", "Product 1", 10);
+    await productRepository.create(product);
+
+    const orderItem = new OrderItem(
+      "1",
+      product.name,
+      product.price,
+      product.id,
+      2
+    );
+
+    const order = new Order("123", "123", [orderItem]);
+    const orderRepository = new OrderRepository()
+    await orderRepository.create(order)
+
+    // Create new Product to updated OrderItem
+    const productUpdated = new Product("456", "Product 2", 20);
+    await productRepository.create(productUpdated);
+
+    // Create new orderItems to update Order
+    const orderItemUpdated = new OrderItem("2", productUpdated.name, productUpdated.price,
+      productUpdated.id,
+      3
+    );
+
+    order.changeItems([orderItemUpdated, orderItem]);
+    await orderRepository.update(order); 
+
+    const updatedOrder = await orderRepository.find(order.id);
+    expect(updatedOrder.items).toStrictEqual(order.items);
   });
 });
