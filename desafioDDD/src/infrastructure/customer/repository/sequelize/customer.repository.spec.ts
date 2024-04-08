@@ -43,7 +43,7 @@ describe("Customer repository test", () => {
       city: address.city,
     });
   });
-
+  
   it("should update a customer", async () => {
     const customerRepository = new CustomerRepository();
     const customer = new Customer("123", "Customer 1");
