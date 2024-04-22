@@ -1,0 +1,102 @@
+	Se vc vai ter um sistema resiliente precisará primeiro apelar para a definição: 
+	- Um sistema resiliente é um sistema que adota intencionalmente estratégias de auto 
+	preservação.
+	- Dentro de uma arquitetura distribuída o conceito de autopreservação se extende 
+	a proteger outros sistemas. Como por exemplo, nao bombardear de requisições um sistema
+	que claramente nao está podendo respondê-las. 
+
+	[] Health Check
+			
+			- Trata-se da capacidade de um sistema verificar seus sinais vitais. 
+			Onde entende-se por sinal vital, o bom funcionamento dos componentes necessários 
+			ao seu funcionamento.
+			Ex: Conexão com o broker de menssagens, banco de dados, outros sistemas ... 
+
+		Um HealthCheck pode assumir duas naturezas:
+			- Passiva: Depende que alguem solicite o diagnostico, para que ele seja gerado.
+				Ex: HealthCheck é um endpoint que verifica essas conexões no momento 
+				que uma req chega.
+			
+			- Ativa: Utiliza-se de outras ferramentas, ou de si mesmo para manter o monitoramento 
+			de seus sinais vitais.
+			
+	[] Rate Limit
+			- Trata-se da capacidade de limitar o numero de requisições que chegam ao seu sistema 
+			baseado em quantas requisições o sistema foi projetado a suportar
+		
+		Um rate Limit pode estar associado á estratégias de negocio:
+			- Rate Limit preferencial:
+				- Suponha que um sistema é capaz de responder 100 req/s. É do interesse de negocio
+				garantir que boa parte dessas requisições sejam dedicadas á atender demandas de clientes
+				mais importantes. E o restante do tráfego seja dedicado á clientes menos representativos
+				em termos de receita.
+
+	[] Circuit Breaker
+			- Trata-se de um conceito que protege o software negando requisições com base na saude 
+			do sistema, no momento.
+
+		Existem 3 situações basicas quando se trata de circuit breaker: 
+			- Circuito fechado :  O fluxo de requisições chega e são atendidas normalmente.
+			- Circuito aberto: As requisições chegam, mas nao negadas imediatamente pelo servidor.
+			- Circuitor meio aberto: Um circuito é considerado meio aberto, quando atende apenas uma
+			pequena parcela de requisições para fins de decidir se o circuito pode ser fechado novamente,
+			ou deve continuar aberto. 
+
+	[] Api gateway
+			- Uma api gateway é uma ferramenta que protege o software barrando requisições inapropriadas.
+			Ex: Pode-se usar uma api gateway para evitar que requisições feitas por usuários nao autenticados
+			sequer cheguem ao serviço principal.
+			- Além de oferer a funcionalidade de filtragem de requisições, uma api gateway tbm oferece consulta
+			constante ao /health de uma aplicação, (funcionalidade de healthCheck) e opções associadas á rate limiting.
+
+		Uma opção quando se trabalha com microserviços, para evitar o antipattern death star, é aplicar multiplas
+		api gateways para gerenciar a comunicação entre microserviços.
+
+	[] Service Mesh
+			- Através da implementação de proxys, permite que seja controlada toda a comunicação da rede.
+			- Evita implementação de proteção pelo própio sistema.
+			- Trabalha com mTLS.
+			- Dentro do proprio service mesh podemos configurar, circuit breaker, politicas de retry, timeout,
+			fault injection, etc ..
+
+		Chama-se fault injection, a injestão proposital de falhas para testar a resiliencia dos serviços
+
+	[] Trabalhar de forma Assíncrona
+			- Trata-se de utilizar menssage brokers como intermédiários, na comunicação entre serviços
+			como forma de evitar perca de dados. 
+			- A capacidade de armazenamento de menssagens permite que sistemas com rates de produção e
+			consumo diferentes possam se comunicar de forma efetiva.
+		
+		É preciso entender com profundidade o message broker que está sendo utilizado de modo a evitar
+		problemas. 
+
+	[] Retry
+			- Retry trata-se de uma estratégia de tentar novamente acessar um  recurso que estava indisponivel
+			no momento da primeira tentativa. 
+
+		Suponha que varios serviços tentam acessar o mesmo recurso ao mesmo tempo, e este recurso nao é
+		capaz de atender a todos ao mesmo tempo. É preciso que os recursos façam seu retry, em momentos
+		distintos para que seja possível atendê-los, dito isso há 3 estratégias de retry: 
+			- Retry linear: Como o nome sugere, trata-se de tentativas de retry baseadas em um aguardo
+			linear, isso se mostra bastante ineficaz, pois é comum que outros serviços tbm assumam um tempo
+			linear e acabem fazendo retry ao mesmo tempo.
+			- Retry exponencial: Efetivamente melhor que o linear, baseia-se numa função exponencial do numero
+			de tentativas de retry já feitas para definir o tempo de aguardo até o proximo retry, embora seja
+			melhor que o linear, ainda existem bastante conflitos, que levam varios serviços a fazerem requisições
+			ao mesmo tempo. 
+			- Retry exponencial com jitter: Demonstrado a melhor estratégia de retry de modo a evitar colisões com
+			outros sistemas que estejam  tentando acessar o recurso, trata-se basicamente de um retry exponencial,
+			que sofre adição de um valor aleatório, do qual chamamos jitter 
+
+	[] Idempotência
+			- Trata-se da capacidade de lidar com a duplicidade de informações.
+			Ex: Usuario clica varias vezes no botao de transferencia bancaria, devemos fazer uma transação por click ?
+			O sistema deve ser capaz de reconhecer e tratar mensagens repetidas. 
+	
+	[] Observabilidade
+			- A observabilidade é o pilar da resiliencia, é necessário levantar metricas acerca do sistema, para
+			poder estudar bem a resiliencia do sistema. 
+			- Tracind distribuído, É mt importante contar com tracing distribuído em arquiteturas distribuídas. De
+			modo a visualizar onde aconteceu esse problema. 
+
+	
