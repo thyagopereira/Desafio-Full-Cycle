@@ -1,0 +1,72 @@
+Arquitetura baseada em eventos // Event driven architecture
+		[] Um evento é sempre uma ocorrência do passado.
+		[] Normalmente eventos deixam efeitos colaterais (algo deve ser acontecer 
+		depois que o evento ocorre ). 
+		[] Um evento pode acontecer de forma internalizada ou externalizada.
+				- Um evento interno é ouvido apenas por componentes locais.
+				- Um evento externo é ouvido por componentes que transcedem o software local.
+		[] Domain events:
+				- Considerando uma aplicação que utiliza DDD como base, e propoe uma separação
+				entre infraestrutura e regras de negócio. Considera-se um domain event, um evento
+				que diz respeito apenas ao domínio, ou seja ás regras de negocio, e nao afeta a
+				camada de infra. Ex: Agregados.
+		
+	Quatro tipos fundamentais de eventos.
+
+		[] Event notification
+			- Geralmente ocorre quando um sistema deseja notificar outros de alguma alteração.
+			- Costuma ser um tipo de evento que se propõe a fazer uma forma mais curta de comunicação,
+			ou seja é um tipo de evento muito direto. Ex : {"pedido" : 1,"status": "aprovado"} 
+
+		[] Event Carried State Transfer
+			- Geralmente é o formato padrão para trafegar menssagens em serviços de mensageria.
+			- Além de alertar, que houve uma alteração, os dados também sao transfegados.
+			- Basicamente são chamados de streams de dados. Ex: {"pedido": 1, "status": "aprovado", "taxa": 0.01} etc ....
+		
+		[] Event Sourcing
+			- Trata-se de uma pratica simples, de armazenar todos os eventos que ocorrem no sistema para fins de
+			recuperação em caso de error. Ou mesmo de auditoria, através de event sourcing é possível observar 
+			numa timeline a quantidade e tipo de eventos que acontecem no sistema, onde podemos talvez, adquirir
+			bons insights de negocio.
+		
+		[] Event Collaboration
+			- Para definir event colaboration é preciso definir primeiro o problema motivador. Suponha um sistema
+			de compras, que se comunica por meio de eventos, que ao serem enviados a outros sistemas geram ações e
+			isto segue em forma de cadeia, até que determinado fluxo esteja completo. Exemplo:
+			
+			|--Sistema de vendas ---|				|----Sistema de estoque---|			 	|---- Sistema de catálogo------|
+			|João comprou um produto| ---> 	|Estoque atualiza a quantd| ----> |Atualiza a qtd exposta no ctlg|
+
+			Leia-se ( ----> ) como enviar um evento ao sistema seguinte.
+
+			Quando trabalhamos com event collaboration, toda e qualquer mudança de estado em uma entidade, gera um evento
+			TUDO ESTÀ GERANDO A TODO MOMENTO OS EVENTOS. Isso é positivo, porém custoso.
+			Pode-se partir do principio de que já temos todas as informações para uma determinada ação. É dificil
+			de compreender fluxos, quando estamos trabalhamos com event collaboration. 
+	
+	CQRS / Command Query Responsabillity segregation
+			
+		[]CQRS vs CQS 
+			- A maior diferença entre eles, é o nivel de granularidade.	
+			- A ideia desse princípio é separar comandos e consultas.
+			- Entende-se os comandos como intenção de mudanças vndas do user, os commandos nao necessariamente
+			precisam oferecer retorno. Já numa consulta, estamos interessados apenas em retorno do dados que foram
+			pedidos.
+		
+			- Se for do interesse, podemos ter bancos de dados diferentes. para leitura e escrita.
+			- Preferencialmente sql para escrta, e noSQL para leitura. 
+
+			O beneficio do CQRS é conseguir desacoplar o modelo de consultas da natureza do domínio.
+		
+		[] CQRS costuma andar em conjunto com o Event Sourcing
+			- Como manter a consistencia eventual com o CQRS ? A ideia proposta é que aja um serviço que realiza o
+			playback do event sourcing, de modo a manter atualizado o banco de leitura. 
+
+			|-Domain
+			|---comandos
+			|------useCases
+			|---------Repositorios
+			|-Consultas
+			|----Usecases or DAOS---
+
+		
