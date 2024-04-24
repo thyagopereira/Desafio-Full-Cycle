@@ -2,16 +2,19 @@ version: '3'
 
 services:
   goapp: 
-    build: .
+    build: ./walletCore
     platform: linux/amd64
     volumes:
-      - .:/app
+      - ./walletCore:/app
     ports:
       - 8080:8080
 
   mysql:
-    image: mysql:5.7
+    build:
+      context: ./mysql_wallet_core
     platform: linux/amd64
+    command: --innodb-use-native-aio=0
+    tty: true
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: wallet
@@ -19,7 +22,7 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - .docker/mysql:/var/lib/mysql
+      - ./mysql_wallet_core/data:/var/lib/mysql
 
   zookeeper:
     image: "confluentinc/cp-zookeeper:6.1.0"
