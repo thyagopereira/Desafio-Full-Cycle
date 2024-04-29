@@ -7,6 +7,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+	"github.com/thyagopereira/full-cycle/eda/pkg/events"
 	web_handlers "github.com/thyagopereira/full-cycle/eda/webHandlers"
 )
 
@@ -25,6 +26,11 @@ func main() {
 	r.HandleFunc("/", web_handlers.HelloServer)
 	r.HandleFunc("/balances/{account_id}", web_handlers.GetAccountBalance)
 	http.ListenAndServe(":3003", r)
+
+	//Init event dispatcher
+
+	eventDispatcher := events.NewEventDispatcher()
+	eventDispatcher.Register()
 
 	// Init kafka connection
 	// consumerConfigMap := ckafka.ConfigMap{
