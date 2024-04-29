@@ -74,3 +74,25 @@ services:
       CONFLUENT_METRICS_TOPIC_REPLICATION: 1
       PORT: 9021
   
+  mysql_balance:
+    build:
+      context: ./mysql_balance_core
+    platform: linux/amd64
+    command: --innodb-use-native-aio=0
+    tty: true
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: balance
+      MYSQL_PASSWORD: root
+    ports:
+      - 3308:3308
+    volumes:
+      - ./mysql_balance_core/data:/var/lib/mysql
+  
+  gobalance: 
+    build: ./balancesCore
+    platform: linux/amd64
+    volumes:
+      - ./balancesCore:/app
+    ports:
+      - 3003:3003
