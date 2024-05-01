@@ -7,27 +7,23 @@ import (
 )
 
 type Balance struct {
-	Id        string
-	AccountId string
-	Amount    int
-	CreatedAt time.Time
+	Id                   string
+	AccountIdFrom        string
+	AccountIdTo          string
+	BalanceAccountIdFrom int
+	BalanceAccountIdTo   int
+	CreatedAt            time.Time
 }
 
-func NewBalance(accountId string, amount int) *Balance {
+func NewBalance(accountIdFrom, accountIdTo string, balanceAccountIdTo, balanceAccountIdFrom int) *Balance {
 	b := &Balance{
-		Id:        uuid.New().String(),
-		AccountId: accountId,
-		Amount:    amount,
-		CreatedAt: time.Now(),
-	}
-
-	if !b.isValid() {
-		panic("Amount < 0")
+		Id:                   uuid.New().String(),
+		AccountIdFrom:        accountIdFrom,
+		AccountIdTo:          accountIdTo,
+		BalanceAccountIdFrom: balanceAccountIdFrom,
+		BalanceAccountIdTo:   balanceAccountIdTo,
+		CreatedAt:            time.Now(),
 	}
 
 	return b
-}
-
-func (b *Balance) isValid() bool {
-	return b.Amount > 0
 }

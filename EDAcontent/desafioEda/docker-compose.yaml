@@ -85,7 +85,7 @@ services:
       MYSQL_DATABASE: balance
       MYSQL_PASSWORD: root
     ports:
-      - 3308:3308
+      - 3390:3006
     volumes:
       - ./mysql_balance_core/data:/var/lib/mysql
   
