@@ -46,12 +46,13 @@ func main() {
 	fmt.Println("Server is Up.")
 
 	// Init kafka connection
+
 	consumerConfigMap := ckafka.ConfigMap{
 		"bootstrap.servers": "kafka:29092",
 		"group.id":          "wallet",
 	}
-	topics := []string{"balances"}
-	kafkaConsumer := kafka.NewConsumer(&consumerConfigMap, topics)
+
+	kafkaConsumer := kafka.NewConsumer(&consumerConfigMap, []string{"balances"})
 
 	// Inits event Dispatcher
 	eventDispatcher := events.NewEventDispatcher()

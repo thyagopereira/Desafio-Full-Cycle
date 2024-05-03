@@ -27,10 +27,31 @@ func main() {
 	}
 	defer db.Close()
 
+	// Init topics on producer
 	configMap := ckafka.ConfigMap{
 		"bootstrap.servers": "kafka:29092",
 		"group.id":          "wallet",
 	}
+	topics := []ckafka.TopicSpecification{
+		{
+			Topic:         "balances",
+			NumPartitions: 1,
+		},
+		{
+			Topic:         "transactions",
+			NumPartitions: 1,
+		},
+	}
+	a, err := ckafka.NewAdminClient(&configMap)
+	if err != nil {
+		fmt.Println(err)
+	}
+	result, err := a.CreateTopics(context.TODO(), topics)
+	fmt.Println(result)
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	kafkaProducer := kafka.NewKafkaProducer(&configMap)
 
 	eventDispatcher := events.NewEventDispatcher()

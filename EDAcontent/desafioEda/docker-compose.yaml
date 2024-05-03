@@ -4,6 +4,7 @@ services:
   goapp: 
     build: ./walletCore
     platform: linux/amd64
+    command: go run cmd/walletcore/main.go
     volumes:
       - ./walletCore:/app
     ports:
@@ -51,7 +52,7 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
@@ -72,7 +73,7 @@ services:
       CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
       CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
       CONFLUENT_METRICS_TOPIC_REPLICATION: 1
-      PORT: 9021
+      PORT: 9021      
   
   mysql_balance:
     build:
@@ -88,10 +89,14 @@ services:
       - 3390:3006
     volumes:
       - ./mysql_balance_core/data:/var/lib/mysql
-  
+
   gobalance: 
     build: ./balancesCore
     platform: linux/amd64
+    command: go run cmd/main.go
+    restart: 'always'
+    depends_on:
+      - goapp
     volumes:
       - ./balancesCore:/app
     ports:
