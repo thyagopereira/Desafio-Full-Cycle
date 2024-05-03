@@ -20,7 +20,7 @@ func NewAccountsDB(db *sql.DB) *AccountsDB {
 func (a *AccountsDB) FindById(accountId string) (*entity.Account, error) {
 	var account entity.Account
 
-	queryString := `SELECT a.id a.balance FROM accounts a WHERE a.id = ?`
+	queryString := `SELECT a.id, a.balance FROM accounts a WHERE a.id = ?`
 	stmt, err := a.DB.Prepare(queryString)
 	if err != nil {
 		return nil, err

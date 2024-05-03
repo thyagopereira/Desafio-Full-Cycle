@@ -12,6 +12,7 @@ import (
 	handler "github.com/thyagopereira/full-cycle/eda/internal/events/handlers"
 	"github.com/thyagopereira/full-cycle/eda/kafka"
 	"github.com/thyagopereira/full-cycle/eda/pkg/events"
+	"github.com/thyagopereira/full-cycle/eda/usecases"
 	web_handlers "github.com/thyagopereira/full-cycle/eda/webHandlers"
 )
 
@@ -30,10 +31,17 @@ func main() {
 		panic(err)
 	}
 
+	// Inits balanceDB and accountsDB
+	balanceDB := databases.NewBalanceDB(db)
+	accountsDB := databases.NewAccountsDB(db)
+
+	// Init use cases
+	balanceUseCases := usecases.NewBalanceUseCases(*accountsDB)
+
 	// Init webserver
 	r := mux.NewRouter()
 	r.HandleFunc("/", web_handlers.HelloServer)
-	r.HandleFunc("/balances/{account_id}", web_handlers.GetAccountBalance)
+	r.HandleFunc("/balances/{account_id}", web_handlers.GetAccountBalance(balanceUseCases))
 	go http.ListenAndServe(":3003", r)
 	fmt.Println("Server is Up.")
 
@@ -44,10 +52,6 @@ func main() {
 	}
 	topics := []string{"balances"}
 	kafkaConsumer := kafka.NewConsumer(&consumerConfigMap, topics)
-
-	// Inits balanceDB and accountsDB
-	balanceDB := databases.NewBalanceDB(db)
-	accountsDB := databases.NewAccountsDB(db)
 
 	// Inits event Dispatcher
 	eventDispatcher := events.NewEventDispatcher()
